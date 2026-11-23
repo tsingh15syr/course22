@@ -1,0 +1,3 @@
+# Lesson 03 benchmark data
+
+The three CSVs are verbatim copies from the timm `results` directory at commit `eac2df3d2c5bba0227ad6e9f9704f12eb5c1e405`, current at the end of May 24, 2022, the commit date of this course notebook. The two performance tables record RTX 3090 measurements with PyTorch 1.11, CUDA 11.3, AMP and NHWC layout. The ImageNet results supply the accuracy column for the original joins. Each file was checked against its upstream Git blob ID. [Upstream data and revision](https://github.com/huggingface/pytorch-image-models/tree/eac2df3d2c5bba0227ad6e9f9704f12eb5c1e405/results) · [Upstream license](LICENSE)
