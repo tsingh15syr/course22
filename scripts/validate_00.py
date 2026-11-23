@@ -13,7 +13,7 @@ def main():
     parser.add_argument("--pretrained", action="store_true",
                         help="Use the lesson's ImageNet weights (downloads once if needed).")
     args = parser.parse_args()
-    notebook = nbformat.read(next(Path(__file__).parent.glob("00-*.ipynb")), as_version=4)
+    notebook = nbformat.read(next((Path(__file__).resolve().parent.parent / "notebooks").glob("00-*.ipynb")), as_version=4)
     nbformat.validate(notebook)
     cells = notebook.cells
     assert cells[7].source.endswith("use_local_photos = False")

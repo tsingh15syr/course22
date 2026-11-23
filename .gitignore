@@ -2,7 +2,7 @@ bird.jpg
 forest.jpg
 .DS_Store
 *.csv
-!modern/data/timm-2022/*.csv
+!data/timm-2022/*.csv
 *.pkl
 *.zip
 us-patent-phrase-to-phrase-matching*

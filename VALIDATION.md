@@ -33,10 +33,10 @@ Use the [project setup](README.md), including the portable Graphviz renderer, an
 ```powershell
 .\.venv\Scripts\python -c "from sklearn.datasets import fetch_california_housing; fetch_california_housing()"
 .\.venv\Scripts\python -c "from huggingface_hub import snapshot_download; snapshot_download('microsoft/deberta-v3-small', revision='a36c739020e01763fe789b4b85e2df55d6180012', allow_patterns=['config.json','tokenizer_config.json','spm.model'])"
-.\.venv\Scripts\python modern\validate_course.py
+.\.venv\Scripts\python scripts\validate_course.py
 ```
 
-[validate_course.py](validate_course.py) also accepts individual notebook paths. It compares each working copy with its original, validates the notebook schema, compiles IPython-transformed code, and checks cell count, order, types, IDs, metadata and attachments. It runs an in-memory copy in a temporary directory, limits CPU worker counts for fixtures, and keeps generated datasets, exports and submissions out of the teaching directories. Shortened fits, random weights and fixture substitutions in the table apply only to this test run.
+[validate_course.py](scripts/validate_course.py) also accepts individual notebook paths. It compares each working copy with its original, validates the notebook schema, compiles IPython-transformed code, and checks cell count, order, types, IDs, metadata and attachments. It runs an in-memory copy in a temporary directory, limits CPU worker counts for fixtures, and keeps generated datasets, exports and submissions out of the teaching directories. Shortened fits, random weights and fixture substitutions in the table apply only to this test run.
 
 The offline ZIP fallback passed separately for 05, 06, 07 and the patent slides. Kaggle client import and argument binding for download, submission and kernel publication were checked using dummy local configuration. Live authentication, competition rule acceptance, submission and publication remain unverified.
 
@@ -62,7 +62,7 @@ The offline ZIP fallback passed separately for 05, 06, 07 and the patent slides.
 After the [locked setup](README.md), run the pretrained smoke test from the repository root.
 
 ```powershell
-.\.venv\Scripts\python modern\validate_00.py --pretrained
+.\.venv\Scripts\python scripts\validate_00.py --pretrained
 ```
 
 The kernel operates in a temporary directory. The saved lesson retains the original fine-tuning call. Full training, validation accuracy, GPU timing and bulk image collection were outside this check.
@@ -70,3 +70,11 @@ The kernel operates in a temporary directory. The saved lesson retains the origi
 ### Issues encountered
 
 The first dependency lock passed static checks but failed at runtime in fastai's data-loader code. Updating fastai and fastdownload resolved the labeling, transform recursion and missing padding-import errors. See the [compatibility changelog](COMPATIBILITY.md) for the affected versions. A Windows file-access error during removal of obsolete packages was resolved inside the project environment before the final sync. Jupyter emitted a Windows event-loop warning and completed the kernel run successfully.
+
+## Filesystem cleanup validation
+
+Relocated 81 tracked files using filesystem moves because the sandbox denied writes to the Git index. Verified all 24 original notebooks against their pre-move Git paths and all readable original materials against pre-move SHA-256 hashes. Verified 24 modernized notebooks against Git, including cell order, metadata and outputs. Only README links in both lesson 00 copies and benchmark lookup paths in both lesson 03 copies changed. All other modernized notebook contents matched.
+
+Root documentation links resolve. Validation scripts parse and now locate original notebooks, working notebooks, slides and benchmark data in their new locations. All 183 checked environment fingerprints matched, covering installed package metadata, pyvenv.cfg, pyproject.toml and uv.lock. Notebook execution and runtime validation were outside this filesystem check. Prior runtime results above describe the modernization pass.
+
+Removed the project-generated Python cache and retained the existing cache exclusions. The environment directory was preserved. The original slides/bird.jpg is a pre-existing self-referencing symbolic link whose target is bird.jpg. Its link target was preserved exactly in original/slides/bird.jpg. Original supporting PDF, PowerPoint and spreadsheet materials remain under original/ to retain their internal layout.

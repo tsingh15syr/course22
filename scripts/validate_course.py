@@ -15,8 +15,8 @@ from IPython.core.inputtransformer2 import TransformerManager
 from nbclient import NotebookClient
 from PIL import Image
 
-HERE = Path(__file__).resolve().parent
-ROOT = HERE.parent
+ROOT = Path(__file__).resolve().parent.parent
+HERE = ROOT / "notebooks"
 
 
 def image_files(folder, names):
@@ -47,7 +47,7 @@ def fixtures(lesson, work):
         pd.DataFrame({"user":np.arange(100)%8,"movie":np.arange(100)%7,
                       "rating":np.arange(100)%5+1.0}).to_csv(work/"ratings.csv",index=False)
     if lesson == "03":
-        shutil.copytree(HERE / "data", work / "data")
+        shutil.copytree(ROOT / "data", work / "data")
     if lesson in ("05", "06", "07"):
         path = work / "titanic"
         path.mkdir()
@@ -77,7 +77,7 @@ def fixtures(lesson, work):
 
 
 def check_structure(path):
-    ref = nbformat.read(ROOT / path.relative_to(HERE), as_version=4)
+    ref = nbformat.read((ROOT / "original" / path.relative_to(HERE) if path.is_relative_to(HERE) else ROOT / "original/slides" / path.name), as_version=4)
     nb = nbformat.read(path, as_version=4)
     nbformat.validate(nb)
     assert len(ref.cells) == len(nb.cells)
@@ -177,7 +177,7 @@ def run(path):
         from torch.hub import get_dir
         if not (Path(get_dir())/"checkpoints"/"resnet18-f37072fd.pth").is_file():
             raise FileNotFoundError("Run the pretrained lesson 00 check once to cache ResNet-18.")
-    lecture = nbformat.read(ROOT/path.name,as_version=4) if path.parent.name=="clean" else nb
+    lecture = nbformat.read(ROOT/"original"/path.name,as_version=4) if path.parent.name=="clean" else nb
     indices = iter(i for i,c in enumerate(lecture.cells) if c.cell_type=="code")
     for c in nb.cells:
         if c.cell_type=="code":
@@ -188,7 +188,7 @@ def run(path):
     nb.cells.insert(0,nbformat.v4.new_code_cell(setup))
     nb.cells.append(nbformat.v4.new_code_cell(CHECKS[lesson]))
     if lesson == "nlp":
-        original = nbformat.read(ROOT/"slides"/path.name, as_version=4)
+        original = nbformat.read(ROOT/"original/slides"/path.name, as_version=4)
         for i in (39, 41):
             demo = original.cells[i]
             tokens = ast.literal_eval(demo.outputs[0].data["text/plain"])
@@ -208,15 +208,15 @@ def main():
     )
     paths = [path.resolve() for path in args.paths]
     if not paths:
-        for source in sorted(ROOT.glob("*.ipynb")):
+        for source in sorted((ROOT / "original").glob("*.ipynb")):
             if not source.name.startswith("00-"):
                 paths.append(HERE / source.name)
             paths.append(HERE / "clean" / source.name)
-        paths.extend(sorted((HERE / "slides").glob("*.ipynb")))
+        paths.extend(sorted((ROOT / "slides").glob("*.ipynb")))
 
     failed = []
     for path in paths:
-        name = path.relative_to(HERE)
+        name = path.relative_to(ROOT)
         print("RUN", name, flush=True)
         try:
             run(path)
